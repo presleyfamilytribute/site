@@ -60,3 +60,69 @@ export const trackVisit = (): void => {
     console.log('Session storage not available');
   }
 };
+
+/**
+ * Enhanced password strength checker
+ */
+export const checkPasswordStrength = (password: string): { 
+  score: number; 
+  feedback: string;
+} => {
+  let score = 0;
+  let feedback = '';
+
+  if (!password) {
+    return { score, feedback: 'Password is required' };
+  }
+
+  // Length check
+  if (password.length < 8) {
+    feedback = 'Password should be at least 8 characters';
+  } else {
+    score += 1;
+  }
+
+  // Complexity checks
+  if (/[A-Z]/.test(password)) score += 1;
+  if (/[a-z]/.test(password)) score += 1;
+  if (/[0-9]/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+  // Provide feedback based on score
+  if (score < 3) {
+    feedback = 'Weak password. Add uppercase, numbers, or special characters';
+  } else if (score < 5) {
+    feedback = 'Medium strength password';
+  } else {
+    feedback = 'Strong password';
+  }
+
+  return { score, feedback };
+};
+
+/**
+ * Content Security Policy violation reporter
+ */
+export const setupCSPReporting = (): void => {
+  document.addEventListener('securitypolicyviolation', (e) => {
+    console.error('CSP violation:', {
+      blockedURI: e.blockedURI,
+      violatedDirective: e.violatedDirective,
+      originalPolicy: e.originalPolicy,
+    });
+    
+    // Could send to a reporting endpoint here
+  });
+};
+
+/**
+ * Basic XSS sanitizer for user input
+ * Note: For production, use a dedicated library like DOMPurify
+ */
+export const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};

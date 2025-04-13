@@ -1,17 +1,15 @@
 
 import { useState, useEffect } from 'react';
-import { Menu, X, Music } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import UserMenu from './auth/UserMenu';
 
-const Header = () => {
-  const [scrolled, setScrolled] = useState(false);
+function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -20,98 +18,133 @@ const Header = () => {
     };
   }, []);
 
-  const menuItems = [
-    { name: "Elvis", href: "#elvis" },
-    { name: "Family", href: "#family" },
-    { name: "Music", href: "#music" },
-    { name: "Timeline", href: "#timeline" },
-    { name: "Gallery", href: "#gallery" },
-    { name: "Contact", href: "#contact" }
-  ];
-
-  const scrollToSection = (href: string) => {
-    setMobileMenuOpen(false);
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
   };
 
   return (
-    <header 
-      className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300 backdrop-blur-sm",
-        scrolled 
-          ? "bg-elvis-navy/95 shadow-lg py-2" 
-          : "bg-transparent py-6"
-      )}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-black/90 backdrop-blur-sm py-2 shadow-lg'
+          : 'bg-transparent py-4'
+      }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Music className="text-elvis-gold mr-2" size={24} />
-            <h1 className="text-2xl md:text-3xl font-playfair font-bold">
-              <span className="text-elvis-gold">The</span> <span className="text-elvis-cream">Presley Legacy</span>
-            </h1>
-          </div>
-          
-          {/* Desktop navigation */}
-          <nav className="hidden md:block">
-            <ul className="flex space-x-6">
-              {menuItems.map((item) => (
-                <li key={item.name}>
-                  <Button 
-                    variant="ghost" 
-                    className="text-elvis-cream hover:text-elvis-gold hover:bg-transparent focus:bg-transparent transition-colors font-medium"
-                    onClick={() => scrollToSection(item.href)}
-                  >
-                    {item.name}
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          
-          {/* Mobile menu button */}
-          <Button 
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-            className="md:hidden text-elvis-cream hover:text-elvis-gold hover:bg-transparent"
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+      <div className="container mx-auto px-4 flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="font-playfair text-xl md:text-2xl font-bold text-elvis-gold">
+          The Presley Legacy
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8">
+          <a href="#elvis" className="text-elvis-cream hover:text-elvis-gold transition-colors">
+            Elvis
+          </a>
+          <a href="#family" className="text-elvis-cream hover:text-elvis-gold transition-colors">
+            Family
+          </a>
+          <a href="#music" className="text-elvis-cream hover:text-elvis-gold transition-colors">
+            Music
+          </a>
+          <a href="#timeline" className="text-elvis-cream hover:text-elvis-gold transition-colors">
+            Timeline
+          </a>
+          <a href="#gallery" className="text-elvis-cream hover:text-elvis-gold transition-colors">
+            Gallery
+          </a>
+          <a href="#contact" className="text-elvis-cream hover:text-elvis-gold transition-colors">
+            Contact
+          </a>
+          <UserMenu />
+        </nav>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center gap-4">
+          <UserMenu />
+          <button
+            onClick={toggleMobileMenu}
+            className="text-elvis-cream focus:outline-none"
+            aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </Button>
-        </div>
-        
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="md:hidden mt-4 pb-4"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <ul className="flex flex-col space-y-3 bg-elvis-navy/95 backdrop-blur-sm p-4 rounded-lg border border-elvis-gold/10 shadow-xl">
-                {menuItems.map((item) => (
-                  <li key={item.name}>
-                    <Button 
-                      variant="ghost" 
-                      className="w-full text-left justify-start text-elvis-cream hover:text-elvis-gold hover:bg-elvis-navy/30"
-                      onClick={() => scrollToSection(item.href)}
-                    >
-                      {item.name}
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {mobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md">
+            <div className="container mx-auto px-4 py-4 flex flex-col space-y-3">
+              <a
+                href="#elvis"
+                className="text-elvis-cream hover:text-elvis-gold transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Elvis
+              </a>
+              <a
+                href="#family"
+                className="text-elvis-cream hover:text-elvis-gold transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Family
+              </a>
+              <a
+                href="#music"
+                className="text-elvis-cream hover:text-elvis-gold transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Music
+              </a>
+              <a
+                href="#timeline"
+                className="text-elvis-cream hover:text-elvis-gold transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Timeline
+              </a>
+              <a
+                href="#gallery"
+                className="text-elvis-cream hover:text-elvis-gold transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Gallery
+              </a>
+              <a
+                href="#contact"
+                className="text-elvis-cream hover:text-elvis-gold transition-colors py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
-};
+}
 
 export default Header;

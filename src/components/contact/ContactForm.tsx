@@ -1,83 +1,69 @@
 
-import { useState } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { createRateLimiter } from '@/utils/security';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
+import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
+import { createRateLimiter, sanitizeInput } from '@/utils/security';
 
-// Create a rate limiter instance (5 submissions per 2 minutes)
-const checkRateLimit = createRateLimiter(5, 120000);
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }).max(50),
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  subject: z.string().min(5, { message: 'Subject must be at least 5 characters' }),
-  message: z.string().min(10, { message: 'Message must be at least 10 characters' }).max(500)
-});
+// Create a rate limiter for the contact form
+const contactFormRateLimiter = createRateLimiter(3, 300000); // 3 attempts per 5 minutes
 
 const ContactForm = () => {
-  const { toast } = useToast();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSecurityDialog, setShowSecurityDialog] = useState(false);
-  
-  // Generate a simple identifier based on browser data for rate limiting
-  const getIdentifier = () => {
-    return `${window.navigator.userAgent.slice(0, 20)}-${window.screen.width}`;
-  };
+  const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    }
-  });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     
-    // Check for rate limiting
-    const identifier = getIdentifier();
-    if (!checkRateLimit(identifier)) {
-      setShowSecurityDialog(true);
-      setIsSubmitting(false);
+    // Rate limiting check
+    if (!contactFormRateLimiter('form-submission')) {
+      toast({
+        variant: "destructive",
+        title: "Too many attempts",
+        description: "Please wait a few minutes before sending another message."
+      });
       return;
     }
 
     try {
-      // Call our Supabase Edge Function to send the email
+      setIsSubmitting(true);
+      
+      // Sanitize inputs to prevent XSS
+      const sanitizedData = {
+        name: sanitizeInput(name),
+        email: sanitizeInput(email),
+        subject: sanitizeInput(subject),
+        message: sanitizeInput(message)
+      };
+      
       const { error } = await supabase.functions.invoke('send-contact-email', {
-        body: values
+        body: sanitizedData
       });
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
+
+      if (error) throw error;
+
       toast({
-        title: 'Message sent!',
-        description: 'Thank you for your message. We will get back to you soon.',
-        duration: 5000
+        title: "Message sent!",
+        description: "Thank you for contacting us. We'll respond shortly."
       });
+
+      // Reset form
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
       
-      form.reset();
-    } catch (error) {
-      console.error('Failed to send message:', error);
+    } catch (error: any) {
       toast({
-        title: 'Error sending message',
-        description: 'There was a problem sending your message. Please try again later.',
-        variant: 'destructive',
-        duration: 5000
+        variant: "destructive",
+        title: "Message failed to send",
+        description: error.message || "There was an error sending your message. Please try again later."
       });
     } finally {
       setIsSubmitting(false);
@@ -85,117 +71,77 @@ const ContactForm = () => {
   };
 
   return (
-    <>
-      <div className="max-w-2xl mx-auto bg-elvis-navy/50 p-8 rounded-lg shadow-xl border border-elvis-gold/20">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-elvis-cream">Name</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="Your name" 
-                        className="bg-elvis-navy/30 border-elvis-gold/30 text-elvis-cream" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-elvis-cream">Email</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="youremail@example.com" 
-                        className="bg-elvis-navy/30 border-elvis-gold/30 text-elvis-cream" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="subject"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-elvis-cream">Subject</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Subject of your message" 
-                      className="bg-elvis-navy/30 border-elvis-gold/30 text-elvis-cream" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-elvis-cream">Message</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Your message..." 
-                      className="bg-elvis-navy/30 border-elvis-gold/30 text-elvis-cream min-h-[150px]" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="pt-2">
-              <Button 
-                type="submit" 
-                className="w-full bg-elvis-gold hover:bg-elvis-gold/80 text-elvis-navy font-medium"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  'Send Message'
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-      
-      {/* Security Alert Dialog */}
-      <AlertDialog open={showSecurityDialog} onOpenChange={setShowSecurityDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Rate Limit Exceeded</AlertDialogTitle>
-            <AlertDialogDescription>
-              Too many form submissions detected. Please wait a few minutes before trying again.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex justify-end mt-4">
-            <Button variant="outline" onClick={() => setShowSecurityDialog(false)}>
-              Close
-            </Button>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+    <div className="max-w-2xl mx-auto mt-10">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
+          <Input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="bg-elvis-navy/40 border-elvis-gold/30 text-elvis-cream placeholder:text-elvis-cream/50 focus:border-elvis-gold"
+            placeholder="Your name"
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="bg-elvis-navy/40 border-elvis-gold/30 text-elvis-cream placeholder:text-elvis-cream/50 focus:border-elvis-gold"
+            placeholder="Your email"
+          />
+        </div>
+        
+        <div className="md:col-span-2">
+          <label htmlFor="subject" className="block text-sm font-medium mb-1">Subject</label>
+          <Input
+            id="subject"
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            required
+            className="bg-elvis-navy/40 border-elvis-gold/30 text-elvis-cream placeholder:text-elvis-cream/50 focus:border-elvis-gold"
+            placeholder="Message subject"
+          />
+        </div>
+        
+        <div className="md:col-span-2">
+          <label htmlFor="message" className="block text-sm font-medium mb-1">Message</label>
+          <textarea
+            id="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            required
+            rows={5}
+            className="w-full rounded-md border border-elvis-gold/30 bg-elvis-navy/40 p-3 text-elvis-cream placeholder:text-elvis-cream/50 focus:border-elvis-gold focus:outline-none"
+            placeholder="Your message"
+          />
+        </div>
+        
+        <div className="md:col-span-2 flex justify-center">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="bg-elvis-gold hover:bg-elvis-gold/90 text-elvis-navy font-medium rounded-md px-8 py-3"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...
+              </>
+            ) : (
+              "Send Message"
+            )}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 

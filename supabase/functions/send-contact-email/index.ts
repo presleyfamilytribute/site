@@ -17,6 +17,34 @@ interface ContactFormData {
   message: string;
 }
 
+// Input validation function
+const validateInput = (data: ContactFormData): { valid: boolean; error?: string } => {
+  if (!data.name || !data.email || !data.subject || !data.message) {
+    return { valid: false, error: "All fields are required" };
+  }
+  
+  // Basic email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(data.email)) {
+    return { valid: false, error: "Invalid email format" };
+  }
+  
+  // Check for reasonable lengths
+  if (data.name.length > 100) {
+    return { valid: false, error: "Name is too long" };
+  }
+  
+  if (data.subject.length > 200) {
+    return { valid: false, error: "Subject is too long" };
+  }
+  
+  if (data.message.length > 5000) {
+    return { valid: false, error: "Message is too long" };
+  }
+  
+  return { valid: true };
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -24,7 +52,22 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Rate limiting could be implemented here with Redis or similar
+
     const formData: ContactFormData = await req.json();
+    
+    // Validate the input
+    const validation = validateInput(formData);
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+    
     const { name, email, subject, message } = formData;
 
     // Send email to the target address
