@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
 import { createRateLimiter } from '@/utils/security';
+import { getRandomQuote } from '@/utils/quotes';
 
 // Create a rate limiter instance (5 submissions per 2 minutes)
 const checkRateLimit = createRateLimiter(5, 120000);
@@ -25,6 +26,12 @@ const ContactSection = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSecurityDialog, setShowSecurityDialog] = useState(false);
+  const [quote, setQuote] = useState("");
+  
+  // Get random Elvis quote on component mount
+  useEffect(() => {
+    setQuote(getRandomQuote());
+  }, []);
   
   // Generate a simple identifier based on browser data for rate limiting
   const getIdentifier = () => {
@@ -74,7 +81,15 @@ const ContactSection = () => {
         <h2 className="font-playfair text-4xl md:text-5xl font-bold text-elvis-gold text-center mb-3">
           Contact Us
         </h2>
-        <p className="text-center font-medium mb-12">Share your thoughts or inquiries about the Presley legacy</p>
+        <p className="text-center font-medium mb-4">Share your thoughts or inquiries about the Presley legacy</p>
+        
+        {/* Elvis Quote */}
+        <div className="max-w-2xl mx-auto mb-8 text-center">
+          <blockquote className="italic text-elvis-gold border-l-4 pl-4 py-2 border-elvis-gold/30">
+            "{quote}"
+            <footer className="text-right text-elvis-cream mt-2">— Elvis Presley</footer>
+          </blockquote>
+        </div>
         
         <div className="max-w-2xl mx-auto bg-elvis-navy/50 p-8 rounded-lg shadow-xl border border-elvis-gold/20">
           <Form {...form}>
