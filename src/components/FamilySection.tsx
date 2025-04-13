@@ -1,33 +1,60 @@
 
 import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
 
 const FamilySection = () => {
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
   const familyMembers = [
     {
       name: "Priscilla Presley",
       relation: "Wife (1967-1973)",
       description: "Met Elvis while he was stationed in Germany during his military service. She was the only woman Elvis ever married and had a profound impact on his life and legacy.",
-      image: "https://images.unsplash.com/photo-1651870845862-c97ca36f1c5c?auto=format&fit=crop&q=80"
+      image: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Priscilla_Presley_in_2022.jpg",
+      alt: "Priscilla Presley in 2022",
+      credit: "Jernej Furman, CC BY 2.0"
     },
     {
       name: "Lisa Marie Presley",
       relation: "Daughter (1968-2023)",
       description: "Elvis and Priscilla's only child, born on February 1, 1968. Lisa Marie followed in her father's musical footsteps and was the sole heir to the Presley estate.",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80"
+      image: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Lisa_Marie_Presley_%282010%29.jpg",
+      alt: "Lisa Marie Presley in 2010",
+      credit: "Rusty Jarrett, CC BY 3.0"
     },
     {
       name: "Vernon Presley",
       relation: "Father (1916-1979)",
       description: "Elvis's father who supported his son's career and later helped manage his business affairs after Elvis achieved fame.",
-      image: "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?auto=format&fit=crop&q=80"
+      image: "https://upload.wikimedia.org/wikipedia/commons/8/89/Vernon_Presley.jpg",
+      alt: "Vernon Presley portrait",
+      credit: "Public domain"
     },
     {
       name: "Gladys Presley",
       relation: "Mother (1912-1958)",
       description: "Elvis was extremely close to his mother, whose death deeply affected him. Their tight-knit relationship influenced many aspects of his life and career.",
-      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80"
+      image: "https://upload.wikimedia.org/wikipedia/commons/0/05/Gladys_Love_Smith_Presley.jpg",
+      alt: "Gladys Presley portrait",
+      credit: "Public domain"
     }
   ];
+
+  useEffect(() => {
+    // Preload images
+    const imagePromises = familyMembers.map(member => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = resolve; // Still resolve on error to continue loading
+        img.src = member.image;
+      });
+    });
+
+    Promise.all(imagePromises).then(() => {
+      setImagesLoaded(true);
+    });
+  }, []);
 
   return (
     <section id="family" className="py-20 bg-elvis-navy">
@@ -40,17 +67,22 @@ const FamilySection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {familyMembers.map((member, index) => (
             <Card key={index} className="bg-elvis-cream border-none hover:shadow-xl transition-shadow overflow-hidden">
-              <div className="h-60 overflow-hidden">
+              <div className="h-60 overflow-hidden relative">
+                {!imagesLoaded && (
+                  <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+                )}
                 <img 
                   src={member.image} 
-                  alt={member.name} 
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  alt={member.alt}
+                  loading="lazy"
+                  className={`w-full h-full object-cover transition-transform duration-500 hover:scale-105 ${imagesLoaded ? 'opacity-100' : 'opacity-0'}`}
                 />
               </div>
               <CardContent className="pt-5">
                 <h3 className="font-playfair text-xl font-semibold text-elvis-navy mb-1">{member.name}</h3>
                 <p className="text-sm text-elvis-red font-medium mb-3">{member.relation}</p>
                 <p className="text-sm text-gray-700">{member.description}</p>
+                <p className="text-xs text-gray-500 mt-2">Image: {member.credit}</p>
               </CardContent>
             </Card>
           ))}
