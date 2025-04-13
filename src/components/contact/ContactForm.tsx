@@ -4,8 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldCheck } from 'lucide-react';
 import { createRateLimiter, sanitizeInput } from '@/utils/security';
+import ReCaptchaComponent from '../auth/ReCaptcha';
 
 // Create a rate limiter for the contact form
 const contactFormRateLimiter = createRateLimiter(3, 300000); // 3 attempts per 5 minutes
@@ -16,10 +17,25 @@ const ContactForm = () => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Check if reCAPTCHA is completed
+    if (!recaptchaToken) {
+      toast({
+        variant: "destructive",
+        title: "Please complete the CAPTCHA",
+        description: "We need to verify that you're not a robot."
+      });
+      return;
+    }
     
     // Rate limiting check
     if (!contactFormRateLimiter('form-submission')) {
@@ -39,7 +55,8 @@ const ContactForm = () => {
         name: sanitizeInput(name),
         email: sanitizeInput(email),
         subject: sanitizeInput(subject),
-        message: sanitizeInput(message)
+        message: sanitizeInput(message),
+        recaptchaToken
       };
       
       const { error } = await supabase.functions.invoke('send-contact-email', {
@@ -58,6 +75,7 @@ const ContactForm = () => {
       setEmail('');
       setSubject('');
       setMessage('');
+      setRecaptchaToken(null);
       
     } catch (error: any) {
       toast({
@@ -72,7 +90,12 @@ const ContactForm = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-10">
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-elvis-navy/30 p-6 md:p-8 rounded-lg shadow-xl border border-elvis-gold/20">
+        <div className="flex items-center justify-center md:col-span-2 mb-2">
+          <ShieldCheck className="text-elvis-gold mr-2" size={24} />
+          <span className="font-medium text-elvis-gold">Secured by reCAPTCHA</span>
+        </div>
+        
         <div>
           <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
           <Input
@@ -126,9 +149,13 @@ const ContactForm = () => {
         </div>
         
         <div className="md:col-span-2 flex justify-center">
+          <ReCaptchaComponent onChange={handleRecaptchaChange} />
+        </div>
+        
+        <div className="md:col-span-2 flex justify-center">
           <Button 
             type="submit" 
-            disabled={isSubmitting}
+            disabled={isSubmitting || !recaptchaToken}
             className="bg-elvis-gold hover:bg-elvis-gold/90 text-elvis-navy font-medium rounded-md px-8 py-3"
           >
             {isSubmitting ? (

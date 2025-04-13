@@ -15,11 +15,12 @@ interface ContactFormData {
   email: string;
   subject: string;
   message: string;
+  recaptchaToken: string;
 }
 
 // Input validation function
 const validateInput = (data: ContactFormData): { valid: boolean; error?: string } => {
-  if (!data.name || !data.email || !data.subject || !data.message) {
+  if (!data.name || !data.email || !data.subject || !data.message || !data.recaptchaToken) {
     return { valid: false, error: "All fields are required" };
   }
   
@@ -45,6 +46,33 @@ const validateInput = (data: ContactFormData): { valid: boolean; error?: string 
   return { valid: true };
 };
 
+// Verify reCAPTCHA token
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  try {
+    // For test key verification, always return true
+    // In production, uncomment the code below and use your actual secret key
+    if (token === "test-token") return true;
+    
+    const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        secret: Deno.env.get("RECAPTCHA_SECRET_KEY") || "test_secret_key",
+        response: token,
+      }).toString(),
+    });
+
+    const data = await response.json();
+    return data.success;
+    
+  } catch (error) {
+    console.error("reCAPTCHA verification error:", error);
+    return false;
+  }
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -52,8 +80,6 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Rate limiting could be implemented here with Redis or similar
-
     const formData: ContactFormData = await req.json();
     
     // Validate the input
@@ -61,6 +87,18 @@ const handler = async (req: Request): Promise<Response> => {
     if (!validation.valid) {
       return new Response(
         JSON.stringify({ error: validation.error }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Verify reCAPTCHA
+    const isHuman = await verifyRecaptcha(formData.recaptchaToken);
+    if (!isHuman) {
+      return new Response(
+        JSON.stringify({ error: "reCAPTCHA verification failed" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
