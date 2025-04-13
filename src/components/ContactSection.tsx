@@ -18,7 +18,7 @@ const ContactSection = () => {
         <ContactForm />
 
         <div className="mt-12 text-center opacity-70">
-          <p>You can also reach us at: <span className="text-elvis-gold">presleyfamilytribute@yahoo.com</span></p>
+          <p>You can also reach us at: <span className="text-elvis-gold">presleyfamilytribute@gmail.com</span></p>
         </div>
       </div>
     </section>
