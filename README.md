@@ -1,5 +1,3 @@
-## Clone and Deploy
-
 ```sh
 # Clone the repository
 git clone https://github.com/presleyfamilytribute/site
