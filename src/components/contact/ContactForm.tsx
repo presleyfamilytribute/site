@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { createRateLimiter } from '@/utils/security';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
+import { Loader2 } from 'lucide-react';
 
 // Create a rate limiter instance (5 submissions per 2 minutes)
 const checkRateLimit = createRateLimiter(5, 120000);
@@ -164,7 +165,14 @@ const ContactForm = () => {
                 className="w-full bg-elvis-gold hover:bg-elvis-gold/80 text-elvis-navy font-medium"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Sending...' : 'Send Message'}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Message'
+                )}
               </Button>
             </div>
           </form>
