@@ -23,13 +23,13 @@ const Hero = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-elvis-navy/90 z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-elvis-navy/70 to-elvis-navy/90 z-10"></div>
       
       {/* Background image with parallax effect */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0 scale-110 transform"
         style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1621330396173-e41b1cafd17f?auto=format&fit=crop&q=80')",
+          backgroundImage: "url('https://images.unsplash.com/photo-1558369178-6a7c35b15d6f?auto=format&fit=crop&q=80&w=1470')",
           transform: "scale(1.1)",
         }}
       ></div>
@@ -49,29 +49,29 @@ const Hero = () => {
         >
           <motion.span 
             variants={fadeInUp}
-            className="inline-block text-elvis-gold uppercase tracking-wider mb-2 font-medium"
+            className="inline-block text-elvis-gold uppercase tracking-widest mb-2 font-medium text-sm md:text-base"
           >
-            A Musical Legacy
+            The King of Rock and Roll
           </motion.span>
           
           <motion.h1 
             variants={fadeInUp}
-            className="font-playfair font-bold text-5xl md:text-7xl lg:text-8xl mb-6 text-white"
+            className="font-playfair font-bold text-5xl md:text-7xl lg:text-8xl mb-6 text-white leading-tight"
           >
-            The <span className="text-elvis-gold">Presley</span> Family
+            The <span className="text-elvis-gold">Presley</span> Legacy
           </motion.h1>
           
           <motion.p 
             variants={fadeInUp}
-            className="font-roboto text-xl md:text-2xl max-w-2xl mx-auto text-elvis-cream mb-8 leading-relaxed"
+            className="font-roboto text-xl md:text-2xl max-w-2xl mx-auto text-elvis-cream/90 mb-8 leading-relaxed"
           >
-            Celebrating a lasting legacy in music, style, and American culture that continues to inspire generations.
+            Celebrating a timeless legacy in music, style, and American culture that continues to inspire generations across the world.
           </motion.p>
           
           <motion.div variants={fadeInUp}>
             <Button 
               onClick={scrollToSection}
-              className="bg-elvis-gold hover:bg-elvis-gold/80 text-elvis-navy font-medium rounded-full px-8 py-6 transition-all duration-300"
+              className="bg-elvis-gold hover:bg-elvis-gold/80 text-elvis-navy font-bold rounded-full px-8 py-6 transition-all duration-300 shadow-lg"
             >
               Explore the Legacy
             </Button>

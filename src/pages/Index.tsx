@@ -33,7 +33,7 @@ const Index = () => {
   }, [toast]);
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-elvis-navy via-black to-elvis-navy text-elvis-cream overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-black via-elvis-navy/90 to-black text-elvis-cream overflow-hidden">
       <Header />
       <main>
         <Hero />
@@ -50,4 +50,3 @@ const Index = () => {
 };
 
 export default Index;
-

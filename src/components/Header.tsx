@@ -40,9 +40,9 @@ const Header = () => {
   return (
     <header 
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
+        "fixed top-0 w-full z-50 transition-all duration-300 backdrop-blur-sm",
         scrolled 
-          ? "bg-elvis-navy bg-opacity-95 shadow-lg py-2" 
+          ? "bg-elvis-navy/95 shadow-lg py-2" 
           : "bg-transparent py-6"
       )}
     >
@@ -57,12 +57,12 @@ const Header = () => {
           
           {/* Desktop navigation */}
           <nav className="hidden md:block">
-            <ul className="flex space-x-8">
+            <ul className="flex space-x-6">
               {menuItems.map((item) => (
                 <li key={item.name}>
                   <Button 
                     variant="ghost" 
-                    className="text-elvis-cream hover:text-elvis-gold hover:bg-transparent focus:bg-transparent transition-colors"
+                    className="text-elvis-cream hover:text-elvis-gold hover:bg-transparent focus:bg-transparent transition-colors font-medium"
                     onClick={() => scrollToSection(item.href)}
                   >
                     {item.name}
@@ -93,7 +93,7 @@ const Header = () => {
               exit={{ opacity: 0, y: -20 }}
               className="md:hidden mt-4 pb-4"
             >
-              <ul className="flex flex-col space-y-3 bg-elvis-navy bg-opacity-95 p-4 rounded-lg">
+              <ul className="flex flex-col space-y-3 bg-elvis-navy/95 backdrop-blur-sm p-4 rounded-lg border border-elvis-gold/10 shadow-xl">
                 {menuItems.map((item) => (
                   <li key={item.name}>
                     <Button 
