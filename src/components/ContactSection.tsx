@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
 import { createRateLimiter } from '@/utils/security';
 import { getRandomQuote } from '@/utils/quotes';
+import { supabase } from '@/integrations/supabase/client';
 
 // Create a rate limiter instance (5 submissions per 2 minutes)
 const checkRateLimit = createRateLimiter(5, 120000);
@@ -59,20 +60,34 @@ const ContactSection = () => {
       return;
     }
 
-    // Add small delay to simulate sending
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Here you would typically send the form data to a server
-    console.log('Form submitted with values:', values);
-    
-    toast({
-      title: 'Message sent!',
-      description: 'Thank you for your message. We will get back to you soon.',
-      duration: 5000
-    });
-    
-    form.reset();
-    setIsSubmitting(false);
+    try {
+      // Call our Supabase Edge Function to send the email
+      const { error } = await supabase.functions.invoke('send-contact-email', {
+        body: values
+      });
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      toast({
+        title: 'Message sent!',
+        description: 'Thank you for your message. We will get back to you soon.',
+        duration: 5000
+      });
+      
+      form.reset();
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      toast({
+        title: 'Error sending message',
+        description: 'There was a problem sending your message. Please try again later.',
+        variant: 'destructive',
+        duration: 5000
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -178,7 +193,7 @@ const ContactSection = () => {
         </div>
 
         <div className="mt-12 text-center opacity-70">
-          <p>You can also reach us at: <span className="text-elvis-gold">contact@presleyfamily.example</span></p>
+          <p>You can also reach us at: <span className="text-elvis-gold">presleyfamilytribute@yahoo.com</span></p>
         </div>
       </div>
       
