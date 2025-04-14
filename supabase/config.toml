@@ -4,7 +4,22 @@ project_id = "zifpgjbrldzfoohyiymv"
 [functions.send-contact-email]
 verify_jwt = false
 
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://localhost:5173", "https://presleyfamilytribute.com"]
+
 [auth.email]
 enable_confirmations = true
 double_confirm_changes = true
 
+[auth.external.google]
+enabled = false
+
+[auth.external.github]
+enabled = false
+
+# Using v2 for enhanced security
+[auth.captcha]
+enabled = true
+provider = "hcaptcha"
+secret = "0x0000000000000000000000000000000000000000"

@@ -1,14 +1,16 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { createRateLimiter } from "@/utils/security";
+import { createRateLimiter, checkPasswordStrength } from "@/utils/security";
+import ReCaptchaComponent from "../auth/ReCaptcha";
+import { Progress } from "@/components/ui/progress";
 
 // Rate limiter for auth attempts
 const authRateLimiter = createRateLimiter(5, 60000); // 5 attempts within 60 seconds
@@ -17,11 +19,46 @@ export function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: '' });
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Check password strength whenever password changes
+  useEffect(() => {
+    if (password) {
+      setPasswordStrength(checkPasswordStrength(password));
+    } else {
+      setPasswordStrength({ score: 0, feedback: '' });
+    }
+  }, [password]);
+
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if reCAPTCHA is completed
+    if (!recaptchaToken) {
+      toast({
+        title: "Please complete the CAPTCHA",
+        description: "We need to verify that you're not a robot.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check password strength
+    if (passwordStrength.score < 3) {
+      toast({
+        title: "Password too weak",
+        description: passwordStrength.feedback,
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Rate limiting check
     if (!authRateLimiter("signup")) {
@@ -41,6 +78,7 @@ export function AuthForm() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          captchaToken: recaptchaToken
         }
       });
 
@@ -59,11 +97,22 @@ export function AuthForm() {
       });
     } finally {
       setLoading(false);
+      setRecaptchaToken(null);
     }
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if reCAPTCHA is completed
+    if (!recaptchaToken) {
+      toast({
+        title: "Please complete the CAPTCHA",
+        description: "We need to verify that you're not a robot.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Rate limiting check
     if (!authRateLimiter("signin")) {
@@ -81,6 +130,9 @@ export function AuthForm() {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          captchaToken: recaptchaToken
+        }
       });
 
       if (error) throw error;
@@ -100,6 +152,19 @@ export function AuthForm() {
       });
     } finally {
       setLoading(false);
+      setRecaptchaToken(null);
+    }
+  };
+
+  const getPasswordStrengthColor = () => {
+    switch(passwordStrength.score) {
+      case 0: return "bg-slate-200";
+      case 1: return "bg-red-500";
+      case 2: return "bg-orange-500";
+      case 3: return "bg-yellow-500";
+      case 4: return "bg-green-400";
+      case 5: return "bg-green-600";
+      default: return "bg-slate-200";
     }
   };
 
@@ -127,6 +192,7 @@ export function AuthForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="bg-elvis-navy/40 border-elvis-gold/30"
                 />
               </div>
               <div className="space-y-2">
@@ -139,11 +205,21 @@ export function AuthForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
+                  className="bg-elvis-navy/40 border-elvis-gold/30"
                 />
+              </div>
+              
+              <div className="pt-2">
+                <ReCaptchaComponent onChange={handleRecaptchaChange} />
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm">
+                <ShieldCheck className="h-4 w-4 text-elvis-gold" />
+                <span className="text-elvis-gold">Your login is protected</span>
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full bg-elvis-gold hover:bg-elvis-gold/90 text-elvis-navy" disabled={loading || !recaptchaToken}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing In
@@ -172,6 +248,7 @@ export function AuthForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="bg-elvis-navy/40 border-elvis-gold/30"
                 />
               </div>
               <div className="space-y-2">
@@ -184,14 +261,33 @@ export function AuthForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
+                  className="bg-elvis-navy/40 border-elvis-gold/30"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Password must be at least 8 characters long
-                </p>
+                
+                {/* Password strength indicator */}
+                {password && (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs">Password strength</span>
+                      <span className="text-xs">{passwordStrength.score}/5</span>
+                    </div>
+                    <Progress value={passwordStrength.score * 20} className="h-1" indicatorClassName={getPasswordStrengthColor()} />
+                    <p className="text-xs mt-1">{passwordStrength.feedback}</p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="pt-2">
+                <ReCaptchaComponent onChange={handleRecaptchaChange} />
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm">
+                <ShieldAlert className="h-4 w-4 text-elvis-gold" />
+                <span className="text-elvis-gold">Use a unique password for better security</span>
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full bg-elvis-gold hover:bg-elvis-gold/90 text-elvis-navy" disabled={loading || !recaptchaToken || passwordStrength.score < 3}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating Account

@@ -1,4 +1,3 @@
-
 // Enhanced client-side security utilities
 
 /**
@@ -184,7 +183,7 @@ export const checkPasswordStrength = (password: string): {
 };
 
 /**
- * Content Security Policy violation reporter with enhanced details
+ * Enhanced Content Security Policy violation reporter with more detailed logging
  */
 export const setupCSPReporting = (): void => {
   document.addEventListener('securitypolicyviolation', (e) => {
@@ -212,12 +211,12 @@ export const setupCSPReporting = (): void => {
     // });
   });
   
-  // Set CSP headers programmatically if supported
+  // Set stricter CSP headers programmatically
   try {
     if ('securitypolicyviolation' in document) {
       const meta = document.createElement('meta');
       meta.httpEquiv = 'Content-Security-Policy';
-      meta.content = "default-src 'self'; script-src 'self' https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; frame-src 'self' https://www.google.com;";
+      meta.content = "default-src 'self'; script-src 'self' https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co; frame-src 'self' https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests;";
       document.head.appendChild(meta);
     }
   } catch (e) {
@@ -324,4 +323,119 @@ export const createSafeHTML = (html: string): { __html: string } => {
   }
   
   return { __html: tempDiv.innerHTML };
+};
+
+/**
+ * Security headers setup for the application
+ * This adds important security headers programmatically
+ */
+export const setupSecurityHeaders = (): void => {
+  try {
+    // For SPAs, we can only set some headers via meta tags
+    const securityHeaders = [
+      {
+        httpEquiv: 'X-XSS-Protection',
+        content: '1; mode=block'
+      },
+      {
+        httpEquiv: 'X-Content-Type-Options',
+        content: 'nosniff'
+      },
+      {
+        httpEquiv: 'Referrer-Policy',
+        content: 'strict-origin-when-cross-origin'
+      },
+      {
+        httpEquiv: 'Permissions-Policy',
+        content: 'camera=(), microphone=(), geolocation=(self), interest-cohort=()'
+      }
+    ];
+
+    securityHeaders.forEach(header => {
+      const meta = document.createElement('meta');
+      meta.httpEquiv = header.httpEquiv;
+      meta.content = header.content;
+      document.head.appendChild(meta);
+    });
+  } catch (e) {
+    console.log('Could not set security headers:', e);
+  }
+};
+
+/**
+ * Protect against common XSS injection points
+ */
+export const protectAgainstXSS = (): void => {
+  // Prevent drag-and-drop attacks
+  document.addEventListener('dragover', e => e.preventDefault(), false);
+  document.addEventListener('drop', e => e.preventDefault(), false);
+  
+  // Sanitize URL parameters
+  const sanitizeUrlParams = () => {
+    const currentUrl = new URL(window.location.href);
+    let paramsChanged = false;
+    
+    currentUrl.searchParams.forEach((value, key) => {
+      const sanitized = sanitizeInput(value);
+      if (value !== sanitized) {
+        currentUrl.searchParams.set(key, sanitized);
+        paramsChanged = true;
+      }
+    });
+    
+    // Update the URL if params were sanitized
+    if (paramsChanged) {
+      window.history.replaceState({}, '', currentUrl.toString());
+    }
+  };
+  
+  sanitizeUrlParams();
+  
+  // Watch for hash changes too
+  window.addEventListener('hashchange', sanitizeUrlParams);
+};
+
+/**
+ * Scan for potential DOM-based XSS vulnerabilities
+ * For educational purposes only - not comprehensive
+ */
+export const scanForXSSVulnerabilities = (): void => {
+  if (process.env.NODE_ENV !== 'development') return;
+  
+  const dangerousProperties = [
+    'innerHTML',
+    'outerHTML',
+    'insertAdjacentHTML',
+    'document.write',
+    'document.writeln',
+    'eval',
+    'setTimeout',
+    'setInterval',
+    'Function'
+  ];
+  
+  console.log('Scanning for potential XSS vulnerabilities...');
+  
+  // Check for potentially dangerous patterns
+  const allScripts = document.querySelectorAll('script');
+  allScripts.forEach(script => {
+    if (!script.src && script.textContent) {
+      dangerousProperties.forEach(prop => {
+        if (script.textContent?.includes(prop)) {
+          console.warn(`Potential XSS risk: ${prop} found in inline script`);
+        }
+      });
+    }
+  });
+  
+  // Check for data: or javascript: URLs in links
+  const allLinks = document.querySelectorAll('a');
+  allLinks.forEach(link => {
+    const href = link.getAttribute('href') || '';
+    if (href.startsWith('javascript:') || href.startsWith('data:')) {
+      console.warn(`Potential XSS risk: Dangerous URL scheme in link: ${href}`);
+    }
+  });
+  
+  console.log('XSS vulnerability scan complete');
 };

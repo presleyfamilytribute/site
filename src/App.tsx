@@ -10,7 +10,12 @@ import AuthPage from "./components/auth/AuthPage";
 import AuthCallback from "./components/auth/AuthCallback";
 import { AuthProvider } from "./hooks/useAuth";
 import { useEffect } from "react";
-import { setupCSPReporting } from "./utils/security";
+import { 
+  setupCSPReporting,
+  setupCSRFProtection,
+  setupSecurityHeaders,
+  protectAgainstXSS
+} from "./utils/security";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +24,23 @@ const App = () => {
   useEffect(() => {
     // Setup CSP violation reporting
     setupCSPReporting();
+    
+    // Setup CSRF protection
+    setupCSRFProtection();
+    
+    // Setup additional security headers
+    setupSecurityHeaders();
+    
+    // Protect against XSS attacks
+    protectAgainstXSS();
+    
+    // In development mode, scan for XSS vulnerabilities
+    if (process.env.NODE_ENV === 'development') {
+      import('./utils/security').then(({ scanForXSSVulnerabilities }) => {
+        scanForXSSVulnerabilities();
+      });
+    }
+    
   }, []);
 
   return (
