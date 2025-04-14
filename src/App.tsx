@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./components/auth/AuthPage";
 import AuthCallback from "./components/auth/AuthCallback";
 import { AuthProvider } from "./hooks/useAuth";
+import AdminPanel from "./pages/AdminPanel";
 import { useEffect } from "react";
 import { 
   setupCSPReporting,
@@ -54,6 +55,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/admin" element={<AdminPanel />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

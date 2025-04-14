@@ -4,6 +4,12 @@ project_id = "zifpgjbrldzfoohyiymv"
 [functions.send-contact-email]
 verify_jwt = false
 
+[functions.admin-get-users]
+verify_jwt = true
+
+[functions.admin-user-action]
+verify_jwt = true
+
 [auth]
 site_url = "http://localhost:5173"
 additional_redirect_urls = ["https://localhost:5173", "https://presleyfamilytribute.com"]
