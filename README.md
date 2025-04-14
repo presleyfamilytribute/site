@@ -1,4 +1,4 @@
-# Presley Family Tribute Website
+# Presley Family Tribute
 
 This repository contains the source code for the **Presley Family Tribute** website, a tribute to the Presley family and their enduring legacy.
 
