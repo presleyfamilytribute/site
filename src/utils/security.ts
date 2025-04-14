@@ -158,12 +158,12 @@ export const checkPasswordStrength = (password: string): {
   }
   
   // Entropy bonus for mixed character types
-  const hasUpper = /[A-Z]/.test(password);
-  const hasLower = /[a-z]/.test(password);
-  const hasDigit = /[0-9]/.test(password);
-  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  let hasUpper = /[A-Z]/.test(password);
+  let hasLower = /[a-z]/.test(password);
+  let hasDigit = /[0-9]/.test(password);
+  let hasSpecial = /[^A-Za-z0-9]/.test(password);
   
-  const charTypesCount = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
+  let charTypesCount = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
   if (charTypesCount >= 3) score += 1;
   if (charTypesCount >= 4) score += 1;
 
