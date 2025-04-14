@@ -50,9 +50,6 @@ function Header() {
           <a href="#timeline" className="text-elvis-cream hover:text-elvis-gold transition-colors">
             Timeline
           </a>
-          <a href="#gallery" className="text-elvis-cream hover:text-elvis-gold transition-colors">
-            Gallery
-          </a>
           <a href="#contact" className="text-elvis-cream hover:text-elvis-gold transition-colors">
             Contact
           </a>
@@ -124,13 +121,6 @@ function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Timeline
-              </a>
-              <a
-                href="#gallery"
-                className="text-elvis-cream hover:text-elvis-gold transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Gallery
               </a>
               <a
                 href="#contact"
