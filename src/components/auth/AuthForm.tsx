@@ -271,7 +271,11 @@ export function AuthForm() {
                       <span className="text-xs">Password strength</span>
                       <span className="text-xs">{passwordStrength.score}/5</span>
                     </div>
-                    <Progress value={passwordStrength.score * 20} className="h-1" indicatorClassName={getPasswordStrengthColor()} />
+                    <Progress 
+                      value={passwordStrength.score * 20} 
+                      className="h-1" 
+                      indicatorClassName={getPasswordStrengthColor()}
+                    />
                     <p className="text-xs mt-1">{passwordStrength.feedback}</p>
                   </div>
                 )}
