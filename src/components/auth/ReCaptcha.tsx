@@ -36,7 +36,7 @@ const ReCaptchaComponent: React.FC<ReCaptchaProps> = ({ onChange }) => {
     <div className="flex justify-center w-full my-4">
       <ReCAPTCHA
         ref={recaptchaRef}
-        sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // This is Google's test key - replace with your actual site key in production
+        sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" 
         onChange={onChange}
         onExpired={handleExpire}
         onErrored={handleErrored}

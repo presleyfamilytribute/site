@@ -47,11 +47,9 @@ const AdminPanel = () => {
       if (!user) return;
       
       try {
+        // Use a safer approach with a raw SQL query to avoid typing issues
         const { data, error } = await supabase
-          .from('admin_users')
-          .select('user_id')
-          .eq('user_id', user.id)
-          .single();
+          .rpc('is_admin_user', { user_id: user.id });
           
         if (error) {
           console.error('Error checking admin status:', error);
