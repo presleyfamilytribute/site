@@ -6,10 +6,9 @@ import ElvisSection from '@/components/ElvisSection';
 import FamilySection from '@/components/FamilySection';
 import MusicSection from '@/components/MusicSection';
 import TimelineSection from '@/components/TimelineSection';
-import VideoSection from '@/components/VideoSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { trackVisit } from '@/utils/security';
 
 const Index = () => {
@@ -49,7 +48,6 @@ const Index = () => {
         <FamilySection />
         <MusicSection />
         <TimelineSection />
-        <VideoSection />
         <ContactSection />
       </main>
       <Footer />
