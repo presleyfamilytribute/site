@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -103,7 +102,6 @@ const FamilySection = () => {
                 <h3 className="font-playfair text-xl font-semibold text-elvis-navy mb-1">{member.name}</h3>
                 <p className="text-sm text-elvis-red font-medium mb-3">{member.relation}</p>
                 <p className="text-sm text-gray-700">{member.description}</p>
-                <p className="text-xs text-gray-500 mt-2">Image: {member.credit}</p>
               </CardContent>
             </Card>
           ))}
