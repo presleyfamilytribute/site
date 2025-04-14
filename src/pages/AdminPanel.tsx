@@ -56,7 +56,7 @@ const AdminPanel = () => {
 
         setIsAdmin(!!data);
 
-        if (!!data) {
+        if (data) {
           // Load users data if admin
           fetchUsers();
         }
