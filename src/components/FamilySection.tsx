@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from 'react';
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const FamilySection = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -41,17 +42,24 @@ const FamilySection = () => {
   ];
 
   useEffect(() => {
-    // Preload images
+    // Preload images with better error handling
     const imagePromises = familyMembers.map(member => {
       return new Promise((resolve) => {
         const img = new Image();
-        img.onload = resolve;
-        img.onerror = resolve; // Still resolve on error to continue loading
+        img.onload = () => {
+          console.log(`Image loaded successfully: ${member.name}`);
+          resolve(true);
+        };
+        img.onerror = () => {
+          console.error(`Failed to load image: ${member.name}`);
+          resolve(false);
+        }; 
         img.src = member.image;
       });
     });
 
     Promise.all(imagePromises).then(() => {
+      console.log("All image promises resolved");
       setImagesLoaded(true);
     });
   }, []);
@@ -67,17 +75,25 @@ const FamilySection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {familyMembers.map((member, index) => (
             <Card key={index} className="bg-elvis-cream border-none hover:shadow-xl transition-shadow overflow-hidden">
-              <div className="h-60 overflow-hidden relative">
+              <AspectRatio ratio={1/1} className="h-60 relative">
                 {!imagesLoaded && (
-                  <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-200 animate-pulse">
+                    <span className="text-gray-500 text-sm">Loading...</span>
+                  </div>
                 )}
                 <img 
                   src={member.image} 
                   alt={member.alt}
                   loading="lazy"
-                  className={`w-full h-full object-cover transition-transform duration-500 hover:scale-105 ${imagesLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  style={{ opacity: imagesLoaded ? 1 : 0 }}
+                  onLoad={() => console.log(`Image rendered in DOM: ${member.name}`)}
+                  onError={(e) => {
+                    console.error(`Image failed to render: ${member.name}`);
+                    e.currentTarget.src = "https://placehold.co/400x400/e2e8f0/64748b?text=Image+unavailable";
+                  }}
                 />
-              </div>
+              </AspectRatio>
               <CardContent className="pt-5">
                 <h3 className="font-playfair text-xl font-semibold text-elvis-navy mb-1">{member.name}</h3>
                 <p className="text-sm text-elvis-red font-medium mb-3">{member.relation}</p>

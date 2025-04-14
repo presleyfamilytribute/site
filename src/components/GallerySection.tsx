@@ -2,12 +2,14 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { detectBasicBot } from '@/utils/security';
 
 const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadedImagesCount, setLoadedImagesCount] = useState(0);
 
   // Better quality, properly attributed Elvis Presley family images
   const images = [
@@ -65,23 +67,40 @@ const GallerySection = () => {
       // Session storage not available
     }
 
-    // Preload images
-    const imagePromises = images.map(image => {
-      return new Promise((resolve, reject) => {
+    // Track individual image loading
+    setLoadedImagesCount(0);
+    const totalImages = images.length;
+
+    // Preload images with better error handling
+    const imagePromises = images.map((image, index) => {
+      return new Promise((resolve) => {
         const img = new Image();
-        img.onload = resolve;
-        img.onerror = reject;
+        img.onload = () => {
+          console.log(`Gallery image loaded successfully: ${index + 1}/${totalImages}`);
+          setLoadedImagesCount(prevCount => prevCount + 1);
+          resolve(true);
+        };
+        img.onerror = () => {
+          console.error(`Failed to load gallery image: ${index + 1}`);
+          resolve(false);
+        };
         img.src = image.url;
       });
     });
 
     Promise.all(imagePromises)
-      .then(() => setIsLoading(false))
+      .then(() => {
+        console.log("All gallery image promises resolved");
+        setIsLoading(false);
+      })
       .catch(() => {
         setLoadError("Some images couldn't be loaded. Please try again later.");
         setIsLoading(false);
       });
-  }, []);
+  }, [images.length]);
+
+  // Calculate loading progress
+  const loadingProgress = images.length > 0 ? (loadedImagesCount / images.length) * 100 : 0;
 
   return (
     <section id="gallery" className="py-20 bg-elvis-cream">
@@ -100,7 +119,9 @@ const GallerySection = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array(6).fill(0).map((_, index) => (
-              <div key={index} className="h-64 bg-gray-200 animate-pulse rounded-lg"></div>
+              <div key={index} className="h-64 bg-gray-200 animate-pulse rounded-lg flex items-center justify-center">
+                <p className="text-gray-500">Loading... {Math.round(loadingProgress)}%</p>
+              </div>
             ))}
           </div>
         ) : (
@@ -111,12 +132,18 @@ const GallerySection = () => {
                 className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group"
                 onClick={() => setSelectedImage(image.url)}
               >
-                <img 
-                  src={image.url} 
-                  alt={image.alt} 
-                  loading="lazy"
-                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <AspectRatio ratio={4/3} className="h-64">
+                  <img 
+                    src={image.url} 
+                    alt={image.alt} 
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={(e) => {
+                      console.error(`Gallery image failed to render: ${index + 1}`);
+                      e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/64748b?text=Image+unavailable";
+                    }}
+                  />
+                </AspectRatio>
                 <div className="absolute inset-0 bg-elvis-navy bg-opacity-0 group-hover:bg-opacity-30 transition-opacity flex items-end">
                   <div className="p-4 w-full transform translate-y-full group-hover:translate-y-0 transition-transform">
                     <p className="text-white text-sm font-medium">{image.caption}</p>
@@ -142,6 +169,9 @@ const GallerySection = () => {
                 src={selectedImage} 
                 alt="Enlarged view" 
                 className="max-w-full max-h-[80vh] object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "https://placehold.co/800x600/e2e8f0/64748b?text=Image+unavailable";
+                }}
               />
               <p className="text-white text-center mt-4">
                 {images.find(img => img.url === selectedImage)?.caption}
