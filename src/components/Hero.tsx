@@ -23,14 +23,15 @@ const Hero = () => {
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-elvis-navy/70 to-elvis-navy/90 z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-elvis-navy/80 to-elvis-navy/90 z-10"></div>
       
       {/* Background image with parallax effect */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0 scale-110 transform"
         style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1558369178-6a7c35b15d6f?auto=format&fit=crop&q=80&w=1470')",
+          backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/8/82/Elvis_Presley_1970.jpg')",
           transform: "scale(1.1)",
+          backgroundPosition: "center 25%"
         }}
       ></div>
       
@@ -49,7 +50,7 @@ const Hero = () => {
         >
           <motion.span 
             variants={fadeInUp}
-            className="inline-block text-elvis-gold uppercase tracking-widest mb-2 font-medium text-sm md:text-base"
+            className="inline-block text-elvis-gold uppercase tracking-widest mb-2 font-medium text-sm md:text-base border-b border-elvis-gold pb-1"
           >
             The King of Rock and Roll
           </motion.span>
@@ -71,7 +72,7 @@ const Hero = () => {
           <motion.div variants={fadeInUp}>
             <Button 
               onClick={scrollToSection}
-              className="bg-elvis-gold hover:bg-elvis-gold/80 text-elvis-navy font-bold rounded-full px-8 py-6 transition-all duration-300 shadow-lg"
+              className="bg-elvis-gold hover:bg-elvis-gold/80 text-elvis-navy font-bold rounded-full px-8 py-6 transition-all duration-300 shadow-lg border border-elvis-gold/20"
             >
               Explore the Legacy
             </Button>

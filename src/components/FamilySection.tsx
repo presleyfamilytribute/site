@@ -2,6 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from 'react';
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FamilySection = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -11,7 +12,7 @@ const FamilySection = () => {
       name: "Priscilla Presley",
       relation: "Wife (1967-1973)",
       description: "Met Elvis while he was stationed in Germany during his military service. She was the only woman Elvis ever married and had a profound impact on his life and legacy.",
-      image: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Priscilla_Presley_in_2022.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Priscilla_Presley_in_2022.jpg/800px-Priscilla_Presley_in_2022.jpg",
       alt: "Priscilla Presley in 2022",
       credit: "Jernej Furman, CC BY 2.0"
     },
@@ -19,7 +20,7 @@ const FamilySection = () => {
       name: "Lisa Marie Presley",
       relation: "Daughter (1968-2023)",
       description: "Elvis and Priscilla's only child, born on February 1, 1968. Lisa Marie followed in her father's musical footsteps and was the sole heir to the Presley estate.",
-      image: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Lisa_Marie_Presley_%282010%29.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Lisa_Marie_Presley_%282010%29.jpg/800px-Lisa_Marie_Presley_%282010%29.jpg",
       alt: "Lisa Marie Presley in 2010",
       credit: "Rusty Jarrett, CC BY 3.0"
     },
@@ -65,34 +66,32 @@ const FamilySection = () => {
   }, []);
 
   return (
-    <section id="family" className="py-20 bg-elvis-navy">
+    <section id="family" className="py-20 bg-gradient-to-b from-elvis-navy to-black">
       <div className="container mx-auto px-4">
         <h2 className="font-playfair text-4xl md:text-5xl font-bold text-elvis-gold text-center mb-3">
           The Presley Family
         </h2>
-        <p className="text-center text-elvis-cream font-medium mb-12">The loved ones behind the legend</p>
+        <p className="text-center text-elvis-cream font-medium mb-12 italic">The loved ones behind the legend</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {familyMembers.map((member, index) => (
-            <Card key={index} className="bg-elvis-cream border-none hover:shadow-xl transition-shadow overflow-hidden">
+            <Card key={index} className="bg-elvis-cream/95 border-none hover:shadow-2xl transition-shadow duration-300 overflow-hidden rounded-lg">
               <AspectRatio ratio={1/1} className="h-60 relative">
-                {!imagesLoaded && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-200 animate-pulse">
-                    <span className="text-gray-500 text-sm">Loading...</span>
-                  </div>
+                {!imagesLoaded ? (
+                  <Skeleton className="h-full w-full" />
+                ) : (
+                  <img 
+                    src={member.image} 
+                    alt={member.alt}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    onLoad={() => console.log(`Image rendered in DOM: ${member.name}`)}
+                    onError={(e) => {
+                      console.error(`Image failed to render: ${member.name}`);
+                      e.currentTarget.src = "https://placehold.co/400x400/e2e8f0/64748b?text=Image+unavailable";
+                    }}
+                  />
                 )}
-                <img 
-                  src={member.image} 
-                  alt={member.alt}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  style={{ opacity: imagesLoaded ? 1 : 0 }}
-                  onLoad={() => console.log(`Image rendered in DOM: ${member.name}`)}
-                  onError={(e) => {
-                    console.error(`Image failed to render: ${member.name}`);
-                    e.currentTarget.src = "https://placehold.co/400x400/e2e8f0/64748b?text=Image+unavailable";
-                  }}
-                />
               </AspectRatio>
               <CardContent className="pt-5">
                 <h3 className="font-playfair text-xl font-semibold text-elvis-navy mb-1">{member.name}</h3>
@@ -105,7 +104,7 @@ const FamilySection = () => {
         </div>
         
         <div className="mt-12 text-center">
-          <div className="inline-block p-6 rounded-lg bg-elvis-cream bg-opacity-10">
+          <div className="inline-block p-6 rounded-lg bg-elvis-cream bg-opacity-20 transform hover:scale-[1.01] transition-transform duration-300">
             <p className="text-elvis-cream italic font-playfair text-lg">
               "The Presley family's story is one of extraordinary talent, deep bonds, and enduring legacy that continues to captivate the world."
             </p>

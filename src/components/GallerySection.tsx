@@ -3,7 +3,15 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Skeleton } from "@/components/ui/skeleton";
 import { detectBasicBot } from '@/utils/security';
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -11,11 +19,11 @@ const GallerySection = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loadedImagesCount, setLoadedImagesCount] = useState(0);
 
-  // Better quality, properly attributed Elvis Presley family images
+  // Higher quality, properly attributed Elvis Presley images
   const images = [
     {
       url: "https://upload.wikimedia.org/wikipedia/commons/9/99/Elvis_Presley_promoting_Jailhouse_Rock.jpg",
-      caption: "Elvis Presley promoting 'Jailhouse Rock'",
+      caption: "Elvis Presley promoting 'Jailhouse Rock' (1957)",
       alt: "Elvis Presley in a promotional photo for Jailhouse Rock",
       credit: "Metro-Goldwyn-Mayer, Public domain"
     },
@@ -103,29 +111,61 @@ const GallerySection = () => {
   const loadingProgress = images.length > 0 ? (loadedImagesCount / images.length) * 100 : 0;
 
   return (
-    <section id="gallery" className="py-20 bg-elvis-cream">
+    <section id="gallery" className="py-20 bg-gradient-to-b from-black to-elvis-navy">
       <div className="container mx-auto px-4">
-        <h2 className="font-playfair text-4xl md:text-5xl font-bold text-elvis-navy text-center mb-3">
-          Family Gallery
+        <h2 className="font-playfair text-4xl md:text-5xl font-bold text-elvis-gold text-center mb-3">
+          Historical Gallery
         </h2>
-        <p className="text-center text-elvis-red font-medium mb-12">Moments captured in time</p>
+        <p className="text-center text-elvis-cream font-medium mb-12 italic">Moments captured in time</p>
         
         {loadError && (
           <Alert variant="destructive" className="mb-8">
             <AlertDescription>{loadError}</AlertDescription>
           </Alert>
         )}
+
+        {/* Featured carousel */}
+        <div className="mb-16">
+          <h3 className="text-2xl font-playfair text-elvis-cream mb-6 text-center">Featured Memories</h3>
+          <Carousel className="max-w-3xl mx-auto">
+            <CarouselContent>
+              {images.slice(0, 3).map((image, index) => (
+                <CarouselItem key={`carousel-${index}`}>
+                  <AspectRatio ratio={16/9} className="bg-black">
+                    {isLoading ? (
+                      <Skeleton className="h-full w-full" />
+                    ) : (
+                      <img 
+                        src={image.url}
+                        alt={image.alt}
+                        className="w-full h-full object-contain"
+                        onClick={() => setSelectedImage(image.url)}
+                      />
+                    )}
+                  </AspectRatio>
+                  <p className="text-elvis-cream text-center mt-2">{image.caption}</p>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-1 bg-elvis-gold/20 text-elvis-cream hover:bg-elvis-gold/40" />
+            <CarouselNext className="right-1 bg-elvis-gold/20 text-elvis-cream hover:bg-elvis-gold/40" />
+          </Carousel>
+        </div>
         
+        <h3 className="text-2xl font-playfair text-elvis-cream mb-6 text-center">Full Collection</h3>
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array(6).fill(0).map((_, index) => (
-              <div key={index} className="h-64 bg-gray-200 animate-pulse rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">Loading... {Math.round(loadingProgress)}%</p>
+              <div key={index} className="h-64 rounded-lg overflow-hidden">
+                <Skeleton className="h-full w-full" />
+                <div className="h-6 mt-2">
+                  <Skeleton className="h-full w-3/4 mx-auto" />
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {images.map((image, index) => (
               <div 
                 key={index}
@@ -144,7 +184,7 @@ const GallerySection = () => {
                     }}
                   />
                 </AspectRatio>
-                <div className="absolute inset-0 bg-elvis-navy bg-opacity-0 group-hover:bg-opacity-30 transition-opacity flex items-end">
+                <div className="absolute inset-0 bg-elvis-navy bg-opacity-0 group-hover:bg-opacity-60 transition-opacity flex items-end">
                   <div className="p-4 w-full transform translate-y-full group-hover:translate-y-0 transition-transform">
                     <p className="text-white text-sm font-medium">{image.caption}</p>
                     <p className="text-white/70 text-xs mt-1">Credit: {image.credit}</p>
@@ -157,9 +197,9 @@ const GallerySection = () => {
         
         {/* Lightbox */}
         {selectedImage && (
-          <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50">
             <button 
-              className="absolute top-4 right-4 text-white hover:text-elvis-gold"
+              className="absolute top-4 right-4 text-white hover:text-elvis-gold transition-colors"
               onClick={() => setSelectedImage(null)}
             >
               <X size={32} />
