@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useToast } from '@/components/ui/use-toast';
@@ -45,19 +44,18 @@ const AdminPanel = () => {
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (!user) return;
-      
+
       try {
-        // Use a safer approach with a raw SQL query to avoid typing issues
-        const { data, error } = await supabase
-          .rpc('is_admin_user', { user_id: user.id });
-          
+        // Provide both the return type and the input parameter type
+        const { data, error } = await supabase.rpc<boolean, { user_id: string }>('is_admin_user', { user_id: user.id });
+
         if (error) {
           console.error('Error checking admin status:', error);
           return;
         }
-        
+
         setIsAdmin(!!data);
-        
+
         if (!!data) {
           // Load users data if admin
           fetchUsers();
@@ -66,18 +64,18 @@ const AdminPanel = () => {
         console.error('Error checking admin status:', error);
       }
     };
-    
+
     checkAdminStatus();
   }, [user]);
 
   // Fetch all users using Supabase Edge Function
   const fetchUsers = async () => {
     if (!user) return;
-    
+
     setLoadingUsers(true);
     try {
-      const { data, error } = await supabase.functions.invoke('admin-get-users');
-      
+      const { data, error } = await supabase.functions.invoke<{ users: AdminUser[] }>('admin-get-users');
+
       if (error) {
         toast({
           title: "Error fetching users",
@@ -86,7 +84,7 @@ const AdminPanel = () => {
         });
         return;
       }
-      
+
       if (data && Array.isArray(data.users)) {
         setUsers(data.users);
       }
@@ -102,13 +100,13 @@ const AdminPanel = () => {
   };
 
   // Handle user actions (ban/unban)
-  const handleUserAction = async (userId: string, action: 'ban' | 'unban') => {
+  const handleUserAction = async (userId: string, action: 'ban' | 'unban'): Promise<void> => {
     setActionInProgress(userId);
     try {
       const { data, error } = await supabase.functions.invoke('admin-user-action', {
-        body: { userId, action }
+        body: { userId, action },
       });
-      
+
       if (error) {
         toast({
           title: "Action failed",
@@ -117,15 +115,14 @@ const AdminPanel = () => {
         });
         return;
       }
-      
+
       toast({
         title: "Success",
         description: `User ${action === 'ban' ? 'banned' : 'unbanned'} successfully`,
       });
-      
+
       // Refresh user list
       fetchUsers();
-      
     } catch (error: any) {
       toast({
         title: "Error",
