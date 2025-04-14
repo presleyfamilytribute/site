@@ -6,7 +6,7 @@ import ElvisSection from '@/components/ElvisSection';
 import FamilySection from '@/components/FamilySection';
 import MusicSection from '@/components/MusicSection';
 import TimelineSection from '@/components/TimelineSection';
-import GallerySection from '@/components/GallerySection';
+import VideoSection from '@/components/VideoSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import { useToast } from "@/components/ui/use-toast";
@@ -19,7 +19,7 @@ const Index = () => {
     // Track the visit without bot detection
     trackVisit();
     
-    // Welcome notification without security info
+    // Simple welcome notification
     toast({
       title: "Welcome to The Presley Legacy",
       description: "Explore the rich history of America's most iconic musical family.",
@@ -49,7 +49,7 @@ const Index = () => {
         <FamilySection />
         <MusicSection />
         <TimelineSection />
-        <GallerySection />
+        <VideoSection />
         <ContactSection />
       </main>
       <Footer />

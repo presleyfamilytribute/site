@@ -12,33 +12,33 @@ const FamilySection = () => {
       name: "Priscilla Presley",
       relation: "Wife (1967-1973)",
       description: "Met Elvis while he was stationed in Germany during his military service. She was the only woman Elvis ever married and had a profound impact on his life and legacy.",
-      image: "https://i.ibb.co/n7qx7Y7/priscilla-presley.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Priscilla_Presley_2012.jpg",
       alt: "Priscilla Presley portrait",
-      credit: "Public domain"
+      credit: "Wikimedia Commons"
     },
     {
       name: "Lisa Marie Presley",
       relation: "Daughter (1968-2023)",
       description: "Elvis and Priscilla's only child, born on February 1, 1968. Lisa Marie followed in her father's musical footsteps and was the sole heir to the Presley estate.",
-      image: "https://i.ibb.co/KL8HD97/lisa-marie-presley.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/9/98/Lisa_Marie_Presley_2013.jpg",
       alt: "Lisa Marie Presley portrait",
-      credit: "Public domain"
+      credit: "Wikimedia Commons"
     },
     {
       name: "Vernon Presley",
       relation: "Father (1916-1979)",
       description: "Elvis's father who supported his son's career and later helped manage his business affairs after Elvis achieved fame.",
-      image: "https://i.ibb.co/CQvkf4p/vernon-presley.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Vernon_Presley%2C_1969%2C_Graceland.jpg",
       alt: "Vernon Presley portrait",
-      credit: "Public domain"
+      credit: "Wikimedia Commons"
     },
     {
       name: "Gladys Presley",
       relation: "Mother (1912-1958)",
       description: "Elvis was extremely close to his mother, whose death deeply affected him. Their tight-knit relationship influenced many aspects of his life and career.",
-      image: "https://i.ibb.co/cLRdNFD/gladys-presley.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Gladys-presley-1956.jpg",
       alt: "Gladys Presley portrait",
-      credit: "Public domain"
+      credit: "Wikimedia Commons"
     }
   ];
 
