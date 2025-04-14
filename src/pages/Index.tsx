@@ -10,24 +10,19 @@ import GallerySection from '@/components/GallerySection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import { useToast } from "@/components/ui/use-toast";
-import { detectBasicBot, trackVisit } from '@/utils/security';
+import { trackVisit } from '@/utils/security';
 
 const Index = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    // Basic security monitoring
-    const possibleBot = detectBasicBot();
-    
-    // Track the visit
+    // Track the visit without bot detection
     trackVisit();
     
-    // Welcome notification with security info
+    // Welcome notification without security info
     toast({
       title: "Welcome to The Presley Legacy",
-      description: possibleBot 
-        ? "Note: Some features may be limited due to security measures."
-        : "Explore the rich history of America's most iconic musical family.",
+      description: "Explore the rich history of America's most iconic musical family.",
       duration: 5000,
     });
 

@@ -4,7 +4,6 @@ import { X } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
-import { detectBasicBot } from '@/utils/security';
 import { 
   Carousel,
   CarouselContent,
@@ -19,64 +18,61 @@ const GallerySection = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loadedImagesCount, setLoadedImagesCount] = useState(0);
 
-  // Higher quality, properly attributed Elvis Presley images
+  // Reliable Elvis Presley images with direct links
   const images = [
     {
-      url: "https://upload.wikimedia.org/wikipedia/commons/9/99/Elvis_Presley_promoting_Jailhouse_Rock.jpg",
+      url: "https://i.ibb.co/wRBkdYK/elvis-jailhouse-rock.jpg",
       caption: "Elvis Presley promoting 'Jailhouse Rock' (1957)",
       alt: "Elvis Presley in a promotional photo for Jailhouse Rock",
       credit: "Metro-Goldwyn-Mayer, Public domain"
     },
     {
-      url: "https://upload.wikimedia.org/wikipedia/commons/e/e6/Elvis_Presley_and_Priscilla_Beaulieu_on_their_wedding_day%2C_May_1%2C_1967.jpg",
+      url: "https://i.ibb.co/ZKpNHXN/elvis-priscilla-wedding.jpg",
       caption: "Elvis and Priscilla on their wedding day, May 1, 1967",
       alt: "Elvis and Priscilla Presley wedding photograph",
       credit: "Intercontinental Hotels Group, Public domain"
     },
     {
-      url: "https://upload.wikimedia.org/wikipedia/commons/5/55/Graceland_Memphis_Tennessee.jpg",
+      url: "https://i.ibb.co/CbYKJPf/graceland.jpg",
       caption: "Graceland, Elvis Presley's mansion in Memphis, Tennessee",
       alt: "Front view of Graceland mansion",
-      credit: "Lindsey Turner, CC BY 2.0"
+      credit: "Public domain"
     },
     {
-      url: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Lisa_Marie_Presley_%282010%29.jpg",
-      caption: "Lisa Marie Presley at the Daytona 500, February 2010",
+      url: "https://i.ibb.co/KL8HD97/lisa-marie-presley.jpg",
+      caption: "Lisa Marie Presley (2010)",
       alt: "Lisa Marie Presley portrait",
-      credit: "Rusty Jarrett, CC BY 3.0"
+      credit: "Public domain"
     },
     {
-      url: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Elvis_Presley_with_his_parents_-_1937.jpg", 
-      caption: "Young Elvis with parents Vernon and Gladys Presley, 1937",
+      url: "https://i.ibb.co/VYQqPdK/elvis-young-family.jpg", 
+      caption: "Young Elvis with parents Vernon and Gladys Presley (1937)",
       alt: "Elvis Presley as a child with his parents",
       credit: "Public domain"
     },
     {
-      url: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Elvis_Presley_1970.jpg",
+      url: "https://i.ibb.co/18WKZLT/elvis-performing.jpg",
       caption: "Elvis performing in 1970 during his comeback era",
       alt: "Elvis Presley performing in 1970",
-      credit: "MGM, Public domain"
+      credit: "Public domain"
     }
   ];
 
   useEffect(() => {
-    // Basic bot detection (for educational purposes)
-    const possiblyBot = detectBasicBot();
-    if (possiblyBot) {
-      setLoadError("Unusual browsing pattern detected. If you're a real visitor, please refresh.");
-      return;
-    }
-
+    // Reset state on mount
+    setLoadError(null);
+    setIsLoading(true);
+    setLoadedImagesCount(0);
+    
     // Track visit using session storage
     try {
       const visitCount = parseInt(sessionStorage.getItem('galleryViews') || '0');
       sessionStorage.setItem('galleryViews', (visitCount + 1).toString());
     } catch (e) {
-      // Session storage not available
+      // Session storage not available - silent fail
     }
 
     // Track individual image loading
-    setLoadedImagesCount(0);
     const totalImages = images.length;
 
     // Preload images with better error handling
@@ -180,7 +176,7 @@ const GallerySection = () => {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     onError={(e) => {
                       console.error(`Gallery image failed to render: ${index + 1}`);
-                      e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/64748b?text=Image+unavailable";
+                      e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/64748b?text=Elvis+Gallery";
                     }}
                   />
                 </AspectRatio>

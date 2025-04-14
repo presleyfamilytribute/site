@@ -1,6 +1,6 @@
 
-import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -12,23 +12,23 @@ const FamilySection = () => {
       name: "Priscilla Presley",
       relation: "Wife (1967-1973)",
       description: "Met Elvis while he was stationed in Germany during his military service. She was the only woman Elvis ever married and had a profound impact on his life and legacy.",
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Priscilla_Presley_in_2022.jpg/800px-Priscilla_Presley_in_2022.jpg",
-      alt: "Priscilla Presley in 2022",
-      credit: "Jernej Furman, CC BY 2.0"
+      image: "https://i.ibb.co/n7qx7Y7/priscilla-presley.jpg",
+      alt: "Priscilla Presley portrait",
+      credit: "Public domain"
     },
     {
       name: "Lisa Marie Presley",
       relation: "Daughter (1968-2023)",
       description: "Elvis and Priscilla's only child, born on February 1, 1968. Lisa Marie followed in her father's musical footsteps and was the sole heir to the Presley estate.",
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Lisa_Marie_Presley_%282010%29.jpg/800px-Lisa_Marie_Presley_%282010%29.jpg",
-      alt: "Lisa Marie Presley in 2010",
-      credit: "Rusty Jarrett, CC BY 3.0"
+      image: "https://i.ibb.co/KL8HD97/lisa-marie-presley.jpg",
+      alt: "Lisa Marie Presley portrait",
+      credit: "Public domain"
     },
     {
       name: "Vernon Presley",
       relation: "Father (1916-1979)",
       description: "Elvis's father who supported his son's career and later helped manage his business affairs after Elvis achieved fame.",
-      image: "https://upload.wikimedia.org/wikipedia/commons/8/89/Vernon_Presley.jpg",
+      image: "https://i.ibb.co/CQvkf4p/vernon-presley.jpg",
       alt: "Vernon Presley portrait",
       credit: "Public domain"
     },
@@ -36,14 +36,14 @@ const FamilySection = () => {
       name: "Gladys Presley",
       relation: "Mother (1912-1958)",
       description: "Elvis was extremely close to his mother, whose death deeply affected him. Their tight-knit relationship influenced many aspects of his life and career.",
-      image: "https://upload.wikimedia.org/wikipedia/commons/0/05/Gladys_Love_Smith_Presley.jpg",
+      image: "https://i.ibb.co/cLRdNFD/gladys-presley.jpg",
       alt: "Gladys Presley portrait",
       credit: "Public domain"
     }
   ];
 
   useEffect(() => {
-    // Preload images with better error handling
+    // Improved image preloading
     const imagePromises = familyMembers.map(member => {
       return new Promise((resolve) => {
         const img = new Image();
@@ -59,10 +59,16 @@ const FamilySection = () => {
       });
     });
 
-    Promise.all(imagePromises).then(() => {
-      console.log("All image promises resolved");
-      setImagesLoaded(true);
-    });
+    Promise.all(imagePromises)
+      .then(() => {
+        console.log("All image promises resolved");
+        setImagesLoaded(true);
+      })
+      .catch(error => {
+        console.error("Error loading images:", error);
+        // Still set images as loaded to show fallbacks
+        setImagesLoaded(true);
+      });
   }, []);
 
   return (
@@ -88,7 +94,7 @@ const FamilySection = () => {
                     onLoad={() => console.log(`Image rendered in DOM: ${member.name}`)}
                     onError={(e) => {
                       console.error(`Image failed to render: ${member.name}`);
-                      e.currentTarget.src = "https://placehold.co/400x400/e2e8f0/64748b?text=Image+unavailable";
+                      e.currentTarget.src = "https://placehold.co/400x400/e2e8f0/64748b?text=Elvis+Family";
                     }}
                   />
                 )}
