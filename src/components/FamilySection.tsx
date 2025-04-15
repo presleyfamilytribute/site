@@ -12,33 +12,33 @@ const FamilySection = () => {
       name: "Priscilla Presley",
       relation: "Wife (1967-1973)",
       description: "Met Elvis while he was stationed in Germany during his military service. She was the only woman Elvis ever married and had a profound impact on his life and legacy.",
-      image: "https://ibb.co/nsRNbh7P",
+      image: "/images/presley/priscilla-presley.jpg",
       alt: "Priscilla Presley portrait",
-      credit: "External Image"
+      credit: "Historical Photo"
     },
     {
       name: "Lisa Marie Presley",
       relation: "Daughter (1968-2023)",
       description: "Elvis and Priscilla's only child, who followed in her father's musical footsteps and was the sole heir to the Presley estate.",
-      image: "https://ibb.co/21xjzxB6",
+      image: "/images/presley/lisa-marie-presley.jpg",
       alt: "Lisa Marie Presley portrait",
-      credit: "External Image"
+      credit: "Historical Photo"
     },
     {
       name: "Vernon Presley",
       relation: "Father (1916-1979)",
       description: "Supported Elvis's career and helped manage his business affairs after his son became famous. A key figure in the Presley family.",
-      image: "https://ibb.co/Mx61fn4v",
+      image: "/images/presley/vernon-presley.jpg",
       alt: "Vernon Presley portrait",
-      credit: "External Image"
+      credit: "Historical Photo"
     },
     {
       name: "Gladys Presley",
       relation: "Mother (1912-1958)",
       description: "Elvis was extremely close to his mother. Her death deeply affected him and is considered a pivotal moment in his life.",
-      image: "https://ibb.co/Y7xk67RJ",
+      image: "/images/presley/gladys-presley.jpg",
       alt: "Gladys Presley portrait",
-      credit: "External Image"
+      credit: "Historical Photo"
     }
   ];
 
