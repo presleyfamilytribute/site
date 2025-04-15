@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -11,33 +12,33 @@ const FamilySection = () => {
       name: "Priscilla Presley",
       relation: "Wife (1967-1973)",
       description: "Met Elvis while he was stationed in Germany during his military service. She was the only woman Elvis ever married and had a profound impact on his life and legacy.",
-      image: "/assets/ai-priscilla-presley.png",
-      alt: "AI-generated portrait of Priscilla Presley",
-      credit: "AI Generated Image"
+      image: "https://ibb.co/nsRNbh7P",
+      alt: "Priscilla Presley portrait",
+      credit: "External Image"
     },
     {
       name: "Lisa Marie Presley",
       relation: "Daughter (1968-2023)",
-      description: "Elvis and Priscilla's only child, born on February 1, 1968. Lisa Marie followed in her father's musical footsteps and was the sole heir to the Presley estate.",
-      image: "/assets/ai-lisa-marie-presley.png",
-      alt: "AI-generated portrait of Lisa Marie Presley",
-      credit: "AI Generated Image"
+      description: "Elvis and Priscilla's only child, who followed in her father's musical footsteps and was the sole heir to the Presley estate.",
+      image: "https://ibb.co/21xjzxB6",
+      alt: "Lisa Marie Presley portrait",
+      credit: "External Image"
     },
     {
       name: "Vernon Presley",
       relation: "Father (1916-1979)",
-      description: "Elvis's father who supported his son's career and later helped manage his business affairs after Elvis achieved fame.",
-      image: "/assets/ai-vernon-presley.png",
-      alt: "AI-generated portrait of Vernon Presley",
-      credit: "AI Generated Image"
+      description: "Supported Elvis's career and helped manage his business affairs after his son became famous. A key figure in the Presley family.",
+      image: "https://ibb.co/Mx61fn4v",
+      alt: "Vernon Presley portrait",
+      credit: "External Image"
     },
     {
       name: "Gladys Presley",
       relation: "Mother (1912-1958)",
-      description: "Elvis was extremely close to his mother, whose death deeply affected him. Their tight-knit relationship influenced many aspects of his life and career.",
-      image: "/assets/ai-gladys-presley.png",
-      alt: "AI-generated portrait of Gladys Presley",
-      credit: "AI Generated Image"
+      description: "Elvis was extremely close to his mother. Her death deeply affected him and is considered a pivotal moment in his life.",
+      image: "https://ibb.co/Y7xk67RJ",
+      alt: "Gladys Presley portrait",
+      credit: "External Image"
     }
   ];
 
