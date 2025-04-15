@@ -47,12 +47,6 @@ export default function UserMenu() {
           <p className="text-xs text-muted-foreground mt-1 truncate">{user?.email}</p>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/premium" className="cursor-pointer">
-            Premium Content
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign Out</span>
