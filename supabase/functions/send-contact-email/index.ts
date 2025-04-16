@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
@@ -59,10 +58,14 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        secret: Deno.env.get("RECAPTCHA_SECRET_KEY") || "test_secret_key",
+        secret: Deno.env.get("RECAPTCHA_SECRET_KEY") || "",
         response: token,
       }).toString(),
     });
+
+    if (!response.ok) {
+      throw new Error("Failed to verify reCAPTCHA");
+    }
 
     const data = await response.json();
     return data.success;

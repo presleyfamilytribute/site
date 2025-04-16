@@ -1,4 +1,3 @@
-
 import { useEffect, useState, createContext, useContext } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,9 +31,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.error("Error fetching session:", error);
+      }
+      setSession(data.session);
+      setUser(data.session?.user ?? null);
       setIsLoading(false);
     });
 

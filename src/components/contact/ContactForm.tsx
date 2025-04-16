@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
@@ -7,6 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Loader2, ShieldCheck } from 'lucide-react';
 import { createRateLimiter, sanitizeInput } from '@/utils/security';
 import ReCaptchaComponent from '../auth/ReCaptcha';
+
+interface ReCaptchaProps {
+  onChange: (token: string | null) => void;
+  sitekey: string;
+}
 
 // Create a rate limiter for the contact form
 const contactFormRateLimiter = createRateLimiter(3, 300000); // 3 attempts per 5 minutes
@@ -60,10 +64,12 @@ const ContactForm = () => {
       };
       
       const { error } = await supabase.functions.invoke('send-contact-email', {
-        body: sanitizedData
+        body: sanitizedData,
       });
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message);
+      }
 
       toast({
         title: "Message sent!",
@@ -149,7 +155,10 @@ const ContactForm = () => {
         </div>
         
         <div className="md:col-span-2 flex justify-center">
-          <ReCaptchaComponent onChange={handleRecaptchaChange} />
+          <ReCaptchaComponent 
+            onChange={handleRecaptchaChange} 
+            sitekey={process.env.VITE_RECAPTCHA_SITE_KEY || "test-key"} 
+          />
         </div>
         
         <div className="md:col-span-2 flex justify-center">
