@@ -1,6 +1,4 @@
-import defineConfig from 'tailwindcss';
-
-export default defineConfig({
+export default {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -112,4 +110,4 @@ export default defineConfig({
     }
   },
   plugins: [require("tailwindcss-animate"), require('@tailwindcss/typography')],
-});
+};
