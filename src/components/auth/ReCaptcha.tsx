@@ -36,7 +36,7 @@ const ReCaptchaComponent: React.FC<ReCaptchaProps> = ({ onChange }) => {
     <div className="flex justify-center w-full my-4">
       <ReCAPTCHA
         ref={recaptchaRef}
-        sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" 
+        sitekey="6LdaKhorAAAAAL28pv_yu3uwX10BkaSH1WBlvhOV" 
         onChange={onChange}
         onExpired={handleExpire}
         onErrored={handleErrored}
